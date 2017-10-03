@@ -11,7 +11,7 @@ The following guide describes the steps to run the first Blinky program on the X
 Import mbed Blinky project from GitHub.
 
 ```
-https://github.com/mbed-Infineon-XMC/Blinky-Example.git
+mbed import https://github.com/mbed-Infineon-XMC/Blinky-Example.git
 ```
 
 ## Step 3: Install ARM GCC toolchain
