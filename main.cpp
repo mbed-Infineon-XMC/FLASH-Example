@@ -16,9 +16,24 @@
 
 /******************************************************************* Includes */
 #include "mbed.h"
+#include "Watchdog.h"
 
 /******************************************************************** Globals */
-DigitalOut led(LED1);
+Watchdog wd;
+DigitalOut led1(LED1);
+DigitalOut led2(LED2);
+InterruptIn button(SW2);
+volatile int wd_flag = 0;
+
+/****************************************************************** Callbacks */
+
+/**
+ * Callback if rising edge detected
+ */
+void rise() {
+
+    wd_flag = 1;
+}
 
 /****************************************************************** Functions */
 
@@ -27,10 +42,25 @@ DigitalOut led(LED1);
  */
 int main() {
 
-    /* Toggle LED1  */
+    /* Check if watchdog was cause of reset */
+    if (wd.watchdogCausedReset()){
+        /* Turn led1 on if wadchdog timer expired */
+        led1 = 1;
+    }
+
+    /* Attach rising callback function */
+    button.rise(&rise);
+
+    /* Configure & start watchdog timer 5 seconds */
+    wd.configure(5.0);
+
     while (1) {
-        led = !led;
-        wait(0.5);
+        wait(1);
+        if(!wd_flag){
+            /* Clear watchdog every second as long as button2 was not pressed */
+            wd.service();
+            led2 = !led2;
+        }
     }
 }
 
