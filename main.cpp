@@ -16,24 +16,9 @@
 
 /******************************************************************* Includes */
 #include "mbed.h"
-#include "Watchdog.h"
 
 /******************************************************************** Globals */
-Watchdog wd;
-DigitalOut led1(LED1);
-DigitalOut led2(LED2);
-InterruptIn button(SW2);
-volatile int wd_flag = 0;
-
-/****************************************************************** Callbacks */
-
-/**
- * Callback if rising edge detected
- */
-void rise() {
-
-    wd_flag = 1;
-}
+Serial pc(P0_5, P0_4); // tx, rx (9600 8N1)
 
 /****************************************************************** Functions */
 
@@ -41,26 +26,20 @@ void rise() {
  * Main Function
  */
 int main() {
+    set_time(1512652152);  // Set RTC time to Thursday, December 7, 2017 1:09:12 PM
 
-    /* Check if watchdog was cause of reset */
-    if (wd.watchdogCausedReset()){
-        /* Turn led1 on if wadchdog timer expired */
-        led1 = 1;
-    }
+    while (true) {
+        time_t seconds = time(NULL);
 
-    /* Attach rising callback function */
-    button.rise(&rise);
+        pc.printf("Time as seconds since January 1, 1970 = %d\n", seconds);
 
-    /* Configure & start watchdog timer 5 seconds */
-    wd.configure(5.0);
+        pc.printf("Time as a basic string = %s", ctime(&seconds));
 
-    while (1) {
+        char buffer[32];
+        strftime(buffer, 32, "%I:%M %p\n", localtime(&seconds));
+        pc.printf("Time as a custom formatted string = %s", buffer);
+
         wait(1);
-        if(!wd_flag){
-            /* Clear watchdog every second as long as button2 was not pressed */
-            wd.service();
-            led2 = !led2;
-        }
     }
 }
 
