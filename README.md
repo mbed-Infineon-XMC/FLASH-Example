@@ -1,7 +1,7 @@
 # FLASH Example
 
-The following guide describes how you can save data into the FLASH memory.
-FLASH sector 11 (257 kByte) can be used therefore.
+The following guide describes how you can write data into flash memory.
+Flash sector 11 (257 kByte) is used therefore.
 
 > NOTE! Not use FLASH if code size segment >= 786.432 kByte. Risk to overwrite code segment.
 
@@ -10,8 +10,6 @@ Over UART the number of key presses is printed.
 
 If button1 is pressed the actual value is programmed into Flash.
 A Flash write operation takes a long time. LED1 is switched on during this process.
-
-> NOTE! Flash memory is divided into sectors. Every secctor is again subvided into flash pages. An program cycle can be performed on page level but an erase cycle must be performed on sector level. A flash program cycle can only set a bit from 0 to 1. Therefore, an erase cycle must be perfomed before every program cycle. During this operation the OS kernel is blocked and can not operate.
 
 After a power-cycle the counter is not zero but has the last programed data.
 
