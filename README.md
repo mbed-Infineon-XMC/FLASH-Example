@@ -1,17 +1,30 @@
-# Blinky Example
+# FLASH Example
 
-The following guide describes the steps to run the first Blinky program on the XMC 4500 Relax Kit board from Infineon.
+The following guide describes how you can save data into the FLASH memory.
+FLASH sector 11 (257 kByte) can be used therefore.
+
+> NOTE! Not use FLASH if code size segment >= 786.432 kByte. Risk to overwrite code segment.
+
+In this example, key presses of button2 are counted. (LED2 flashes)
+Over UART the number of key presses is printed.
+
+If button1 is pressed the actual value is programmed into Flash.
+A Flash write operation takes a long time. LED1 is switched on during this process.
+
+> NOTE! Flash memory is divided into sectors. Every secctor is again subvided into flash pages. An program cycle can be performed on page level but an erase cycle must be performed on sector level. A flash program cycle can only set a bit from 0 to 1. Therefore, an erase cycle must be perfomed before every program cycle. During this operation the OS kernel is blocked and can not operate.
+
+After a power-cycle the counter is not zero but has the last programed data.
 
 ## Step 1: Download mbed CLI
 
 * [Mbed CLI](https://docs.mbed.com/docs/mbed-os-handbook/en/latest/dev_tools/cli/#installing-mbed-cli) - Download and install mbed CLI.
 
-## Step 2: Import startup project
+## Step 2: Import Flash-Example project
 
-Import mbed Blinky project from GitHub.
+Import mbed Flash-Example project from GitHub.
 
 ```
-mbed import https://github.com/mbed-Infineon-XMC/Blinky-Example.git
+mbed import https://github.com/mbed-Infineon-XMC/FLASH-Example.git
 ```
 
 ## Step 3: Install ARM GCC toolchain
@@ -27,7 +40,7 @@ Example:
 
 Navigate into the project folder and execute the following command:
 ```
-cd Blinky-Example.git/
+cd FLASH-Example.git/
 mbed compile -m XMC_4500_RELAX_KIT -t GCC_ARM
 ```
 mbed creates a BUID directory where you can find the executables (bin, elf, hex ...).
@@ -40,25 +53,8 @@ mbed creates a BUID directory where you can find the executables (bin, elf, hex 
 $ JLinkExe
 J-LINK> device xmc4500-1024
 J-LINK> h
-J-Link> loadfile Blinky-Example.git.hex
+J-Link> loadfile FLASH-Example.git.hex
 J-Link> r
 J-Link> g
 ```
 * Choose SWD, 4000kHz as interface settings!!
-
-## Step 6: If successful..
-
-When everything has gone well, LED1 will blink with 2Hz.
-
-## Step 7: Eclipse IDE & debugging
-
-If you want to compile and debug the project with eclipse follow this guidline:
-
-* First export and create a makefile for the eclipse platform.
-```
-mbed export -i eclipse_gcc_arm -m XMC_4500_RELAX_KIT
-```
-* Install Eclipse C/C++ IDE
-* [Install Plugins](https://github.com/mhorauer/XMC4500-Barebone-Projects/blob/master/Setup/plugins.asciidoc) - The following tutorial could be helpful.
-
-* [Debugging with eclipse](https://docs.mbed.com/docs/mbed-os-handbook/en/5.3/debugging/debugging_eclipse_pyocd/) - Also take a look to the mbed debuging guidlines.
