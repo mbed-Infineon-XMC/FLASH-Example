@@ -57,6 +57,7 @@ void nvm_thread()
             led1 = 1;
             cnt[0] = local_cnt;
             /* Save new data into flash */
+            pc.printf("Save data into flash!\n");
             nvm.erase(addr, nvm.get_sector_size(addr));
             nvm.program((void*)cnt, addr, sizeof(cnt));
             led1 = 0;
