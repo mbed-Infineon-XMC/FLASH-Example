@@ -19,16 +19,14 @@
 #include "rtos.h"
 
 /******************************************************************** Globals */
-
-InterruptIn button(SW2);
-DigitalIn button2(SW1);
+Serial pc(P0_5, P0_4); // tx, rx (9600 8N1)
+DigitalIn button1(SW1);
+InterruptIn button2(SW2);
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 FlashIAP nvm;
-volatile uint8_t cnt[256] = { 0 };
+uint8_t cnt[256] = { 0 };
 volatile uint8_t local_cnt;
-
-Serial pc(P0_5, P0_4); // tx, rx (9600 8N1)
 
 /****************************************************************** Callbacks */
 
@@ -38,7 +36,7 @@ Serial pc(P0_5, P0_4); // tx, rx (9600 8N1)
 void rise() {
 
     local_cnt++;
-    led1 = !led1;
+    led2 = !led2;
 }
 
 /****************************************************************** Functions */
@@ -51,16 +49,16 @@ void nvm_thread()
     local_cnt = cnt[0];
 
     while (true) {
-        /* Wait for press event */
-        if (!button2) {
-            led2 = 1;
+        /* If button1 pressed save data to flash */
+        if (!button1) {
+            led1 = 1;
             cnt[0] = local_cnt;
             /* Save new data into flash */
             nvm.erase(addr, nvm.get_sector_size(addr));
             nvm.program((void*)cnt, addr, sizeof(cnt));
-            led2 = 0;
+            led1 = 0;
         }
-        wait(0.2);
+        wait(0.1);
     }
 }
 
@@ -73,7 +71,7 @@ int main() {
     worker.start(callback(nvm_thread));
 
     /* Attach rising callback function */
-    button.rise(&rise);
+    button2.rise(&rise);
 
     while (true) {
         wait(1);
