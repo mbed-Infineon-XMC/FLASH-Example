@@ -18,6 +18,9 @@
 #include "mbed.h"
 #include "rtos.h"
 
+/******************************************************************** Defines */
+#define FLASH_PAGE_SIZE         256
+
 /******************************************************************** Globals */
 Serial pc(P0_5, P0_4); // tx, rx (9600 8N1)
 DigitalIn button1(SW1);
@@ -25,7 +28,7 @@ InterruptIn button2(SW2);
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 FlashIAP nvm;
-uint8_t cnt[256] = { 0 };
+uint8_t cnt[FLASH_PAGE_SIZE] = { 0 };
 volatile uint8_t local_cnt;
 
 /****************************************************************** Callbacks */
@@ -45,7 +48,7 @@ void nvm_thread()
 {
     /* Load data from Flash after power up */
     uint32_t addr = nvm.get_flash_start();
-    nvm.read((void*)&cnt[0], addr, sizeof(cnt));
+    nvm.read((void*)cnt, addr, sizeof(cnt));
     local_cnt = cnt[0];
 
     while (true) {
